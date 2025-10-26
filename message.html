@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Birthday Message 🎉</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="message.css">
+</head>
+<body>
+  
+  <!-- 🎵 Audio -->
+  <audio id="birthdayAudio" loop>
+    <source src="audio/happy-birthday-401919.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <!-- 🎂 Birthday Message -->
+  <div class="message-container">
+    <div class="message-box">
+      <div id="slideshow">
+        <p class="active">🎉 Happy Birthday to You! 🎂</p>
+        <p>Today is all about celebrating <strong>you!</strong> 🥳</p>
+        <p>May your heart be filled with happiness 💖</p>
+        <p>May your dreams take you where your heart desires 🌈</p>
+        <p>You deserve nothing but love, laughter, and joy ✨</p>
+        <p>Because you are someone who lights up my life 🥰</p>
+        <p>I don’t know how to explain it, but you’ve become such an important part of my life 👉👈</p>
+        <p>Tumhare sath bitai hui har pal mere liye boht khaas hai 🫣</p>
+        <p>Aur me is relation ko kabi tutne nhi dene wala meri <strong>Aalu !</strong> </p>
+        <p>And one another thing tumhare bolne se bhi me kahi nhi jane wala beacuse i have aleardy plan my future with you 😤😓</p>
+        <p>Have the most magical birthday ever! 🌟</p>
+        <p><strong>I LOVE YOU ♡</strong></p>
+        <p>🎁 With lots of love and warm wishes 💌</p>
+      </div>
+      <button onclick="playAgain()">Replay 💫</button>
+    </div>
+  </div>
+
+  <script>
+    // 🎞️ Slideshow
+    const slides = document.querySelectorAll("#slideshow p");
+    let index = 0;
+    function showNextMessage() {
+      slides[index].classList.remove("active");
+      index = (index + 1) % slides.length;
+      slides[index].classList.add("active");
+    }
+    setInterval(showNextMessage, 4000);
+
+    // 🔁 Replay
+    function playAgain() {
+      window.location.href = "message.html";
+    }
+
+    // 🎵 Enable audio after user clicks anywhere
+    const audio = document.getElementById("birthdayAudio");
+    document.addEventListener("click", function playMusic() {
+      audio.play()
+        .then(() => console.log("🎵 Music playing"))
+        .catch(err => console.log("⚠️ Play blocked:", err));
+      document.removeEventListener("click", playMusic); // run once
+    });
+  </script>
+  
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catch My Heart 💖</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: radial-gradient(circle at top, #ffb6c1, #ff69b4);
+        font-family: 'Poppins', sans-serif;
+        transition: background 1s ease-in-out;
+        touch-action: none;
+    }
+
+    #gameArea {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    #basket {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 5;
+        display: block;
+        width: 60px;
+        height: 60px;
+        user-select: none;
+    }
+
+    #basket img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    .heart {
+        position: absolute;
+        top: 0;
+        font-size: 30px;
+        color: #ff1744;
+        animation: fall linear;
+        z-index: 2;
+    }
+
+    #scoreBoard {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        font-size: 22px;
+        color: white;
+        font-weight: bold;
+        text-shadow: 1px 1px 4px #000;
+        z-index: 5;
+    }
+
+    /* 💖 MESSAGE BOX STYLING */
+    #messageBox {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.95);
+        text-align: center;
+        display: none;
+        color: white;
+        font-size: 26px;
+        font-weight: 600;
+        z-index: 10;
+        opacity: 0;
+        transition: opacity 1.2s ease, transform 1.2s ease;
+    }
+
+    #messageBox.show {
+        display: block;
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    #messageBox img {
+        width: 180px;
+        margin-bottom: 20px;
+        border-radius: 15px;
+        animation: softPulse 3s infinite ease-in-out;
+        box-shadow: 0 0 25px rgba(255, 255, 255, 0.6);
+    }
+
+    #messageBox .text {
+        line-height: 1.5;
+        animation: fadeText 2s ease forwards;
+        text-shadow: 0 0 12px rgba(255,255,255,0.6);
+    }
+
+    @keyframes fall {
+        0% { transform: translateY(0); opacity: 1; }
+        100% { transform: translateY(100vh); opacity: 0.8; }
+    }
+
+    @keyframes softPulse {
+        0%, 100% { transform: scale(1); box-shadow: 0 0 25px rgba(255,255,255,0.6); }
+        50% { transform: scale(1.05); box-shadow: 0 0 45px rgba(255,255,255,0.9); }
+    }
+
+    @keyframes fadeText {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+</style>
+</head>
+<body>
+    <div id="gameArea">
+        <!-- ✅ Basket image -->
+        <div id="basket">
+            <img src="images/15-155609_basket-full-of-hearts-free-clipart-clip-art-removebg-preview.png" alt="Basket">
+        </div>
+
+        <div id="scoreBoard">💖 Hearts Caught: <span id="score">0</span>/10</div>
+
+        <!-- 🩷 End Message -->
+        <div id="messageBox">
+            <img src="images/88df629c6cfc0d58f3e30afa4ab34724.jpg" alt="Cute Image">
+            <div class="text">Good girl 💕 You completed the game!<br>Here’s something special for you… 🎁</div>
+        </div>
+    </div>
+
+<script>
+    const gameArea = document.getElementById("gameArea");
+    const basket = document.getElementById("basket");
+    const scoreDisplay = document.getElementById("score");
+    const messageBox = document.getElementById("messageBox");
+
+    let score = 0;
+    const goal = 10;
+
+    function moveBasket(x) {
+        const basketWidth = basket.offsetWidth;
+        const newLeft = x - basketWidth / 2;
+        basket.style.left = `${Math.max(0, Math.min(newLeft, window.innerWidth - basketWidth))}px`;
+    }
+
+    document.addEventListener("mousemove", (e) => moveBasket(e.clientX));
+    document.addEventListener("touchmove", (e) => {
+        if (e.touches.length > 0) moveBasket(e.touches[0].clientX);
+    }, { passive: true });
+
+    document.body.addEventListener("touchmove", function(e) {
+        e.preventDefault();
+    }, { passive: false });
+
+    function createHeart() {
+        const heart = document.createElement("div");
+        heart.classList.add("heart");
+        heart.innerHTML = "❤️";
+        heart.style.left = Math.random() * (window.innerWidth - 30) + "px";
+        heart.style.animationDuration = (Math.random() * 2 + 2) + "s";
+        gameArea.appendChild(heart);
+
+        let fallInterval = setInterval(() => {
+            const heartRect = heart.getBoundingClientRect();
+            const basketRect = basket.getBoundingClientRect();
+
+            if (
+                heartRect.bottom >= basketRect.top &&
+                heartRect.left >= basketRect.left &&
+                heartRect.right <= basketRect.right
+            ) {
+                gameArea.removeChild(heart);
+                clearInterval(fallInterval);
+                score++;
+                scoreDisplay.textContent = score;
+
+                if (score >= goal) {
+                    winGame();
+                }
+            } else if (heartRect.top > window.innerHeight - 10) {
+                gameArea.removeChild(heart);
+                clearInterval(fallInterval);
+            }
+        }, 20);
+
+        setTimeout(() => {
+            if (gameArea.contains(heart)) {
+                gameArea.removeChild(heart);
+            }
+            clearInterval(fallInterval);
+        }, 5000);
+    }
+
+    function winGame() {
+        clearInterval(heartInterval);
+
+        // 🌙 Smoothly dim background instead of instant dark
+        document.body.style.transition = "background 1.2s ease-in-out";
+        document.body.style.background = "rgba(0, 0, 0, 0.8)";
+
+        // Hide game elements smoothly
+        gameArea.querySelectorAll('.heart, #basket, #scoreBoard').forEach(el => {
+            el.style.transition = "opacity 0.8s ease";
+            el.style.opacity = "0";
+            setTimeout(() => el.style.display = "none", 800);
+        });
+
+        // Show end message cleanly
+        setTimeout(() => {
+            messageBox.classList.add("show");
+        }, 1000);
+
+        // Smooth redirect after delay
+        setTimeout(() => {
+            window.location.href = "message.html";
+        }, 6500);
+    }
+
+    const heartInterval = setInterval(createHeart, 800);
+</script>
+</body>
+</html>
